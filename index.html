@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Long View</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a calm reading column. Part 1 = where to read, Part 2 = charts, each indicator shown at 3 months and 1 year side by side. */
+:root {
+  --bg: #f5f7f7;
+  --surface: #ffffff;
+  --ink: #17262b;
+  --muted: #5a6b70;
+  --line: #d9e1e2;
+  --accent: #2f6f73;
+  --accent-soft: #e2eeee;
+  --left: #b0414a;
+  --centre: #6b6f75;
+  --right: #2f5aa8;
+  --mixed: #7a5aa0;
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1719; --surface: #162124; --ink: #e3ebec; --muted: #94a6aa; --line: #263639;
+    --accent: #7cc0c2; --accent-soft: #1d3134; --left: #e0808a; --centre: #a6abb1; --right: #86a9eb; --mixed: #b89ade;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1719; --surface: #162124; --ink: #e3ebec; --muted: #94a6aa; --line: #263639;
+  --accent: #7cc0c2; --accent-soft: #1d3134; --left: #e0808a; --centre: #a6abb1; --right: #86a9eb; --mixed: #b89ade;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.6 var(--body);
+}
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.6rem, 3.2vw, 2.1rem); }
+h3 { font-size: 1.2rem; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lede { max-width: 62ch; color: var(--muted); font-size: 1.08rem; margin-top: 12px; }
+.eyebrow { font: 500 0.75rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+header { display: grid; gap: 8px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+nav.jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+nav.jump a {
+  font: 500 0.85rem/1 var(--body); text-decoration: none; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; background: var(--surface);
+}
+nav.jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+section.part { padding-top: 48px; display: grid; gap: 20px; }
+.part-head { display: grid; gap: 8px; }
+.part-head p { max-width: 64ch; color: var(--muted); }
+
+/* Sources */
+.group { display: grid; gap: 10px; padding-top: 12px; }
+.group > p.why { color: var(--muted); max-width: 64ch; font-size: 0.95rem; }
+.sources { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 10px; }
+.src {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; display: grid; gap: 6px; min-width: 0;
+}
+.src-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.src a.name { font-weight: 600; font-size: 1.02rem; text-decoration: none; color: var(--ink); }
+.src a.name:hover { color: var(--accent); text-decoration: underline; }
+.src p { font-size: 0.92rem; color: var(--muted); }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { font: 500 0.7rem/1 var(--mono); letter-spacing: 0.04em; padding: 4px 7px; border-radius: 4px; border: 1px solid currentColor; white-space: nowrap; }
+.t-left { color: var(--left); } .t-centre { color: var(--centre); } .t-right { color: var(--right); } .t-mixed { color: var(--mixed); }
+.t-free { color: var(--accent); }
+.t-limit { color: var(--muted); border-style: dashed; }
+
+.spectrum { display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.spectrum-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--left), var(--centre), var(--right)); }
+.spectrum-labels { display: flex; justify-content: space-between; font: 0.75rem/1.3 var(--mono); color: var(--muted); gap: 8px; flex-wrap: wrap; }
+
+.tip { background: var(--accent-soft); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; max-width: 80ch; }
+.tip ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+
+/* Charts */
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.controls button {
+  font: 500 0.85rem/1 var(--body); color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer;
+}
+.controls button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.chart-group { display: grid; gap: 12px; padding-top: 16px; }
+.chart-group > p.why { color: var(--muted); max-width: 70ch; font-size: 0.95rem; }
+.indicator { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 10px; display: grid; gap: 10px; }
+.ind-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; align-items: baseline; }
+.ind-head p { color: var(--muted); font-size: 0.9rem; max-width: 70ch; }
+.ind-head a { font: 0.78rem/1 var(--mono); white-space: nowrap; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pair.only-3m .w-12m, .pair.only-12m .w-3m { display: none; }
+.pair.only-3m, .pair.only-12m { grid-template-columns: 1fr; }
+.wbox { min-width: 0; display: grid; gap: 4px; }
+.wlabel { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.wslot { height: 200px; border-radius: 6px; background: var(--bg); overflow: hidden; display: grid; place-items: center; color: var(--muted); font-size: 0.85rem; }
+.wslot .tradingview-widget-container { width: 100%; height: 100%; }
+.wslot .tradingview-widget-copyright { display: none; }
+@media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+
+footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; display: grid; gap: 6px; max-width: 80ch; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Read widely · zoom out · breathe</span>
+  <h1>The Long View</h1>
+  <p class="lede">A short list of free, level-headed places to read the news from more than one side, and live charts of the big indicators shown over 3 months and 1 year side by side. Most scary headlines look much smaller once you zoom out.</p>
+  <nav class="jump" aria-label="Jump to">
+    <a href="#read">Where to read</a>
+    <a href="#check">Checking a claim</a>
+    <a href="#money">Money without the hype</a>
+    <a href="#charts">Live charts</a>
+  </nav>
+</header>
+
+<!-- ============ PART 1: NEWS ============ -->
+<section class="part" id="read">
+  <div class="part-head">
+    <span class="eyebrow">Part 1</span>
+    <h2>Where to read</h2>
+    <p>No single outlet is neutral. The trick is to read a straight news source first, then see how the same story is told from the left and the right. Lean labels below are rough and widely used guides, not verdicts.</p>
+  </div>
+
+  <div class="spectrum" aria-hidden="true">
+    <div class="spectrum-bar"></div>
+    <div class="spectrum-labels"><span>Leans left</span><span>Centre / straight news</span><span>Leans right</span></div>
+  </div>
+
+  <div class="group">
+    <h3>Start here: straight news</h3>
+    <p class="why">Wire services and broadcasters with strict impartiality rules. Dry on purpose, which is the point.</p>
+    <ul class="sources">
+      <li class="src"><div class="src-top"><a class="name" href="https://www.bbc.co.uk/news" target="_blank" rel="noopener">BBC News</a><span class="tags"><span class="tag t-centre">CENTRE</span><span class="tag t-free">FREE</span></span></div><p>UK public broadcaster with a legal duty of impartiality. Good first stop for any UK story.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://apnews.com" target="_blank" rel="noopener">AP News</a><span class="tags"><span class="tag t-centre">CENTRE</span><span class="tag t-free">FREE</span></span></div><p>Associated Press. A news agency that other papers buy stories from, so it sticks to facts.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://www.reuters.com" target="_blank" rel="noopener">Reuters</a><span class="tags"><span class="tag t-centre">CENTRE</span><span class="tag t-limit">FREE SIGN-UP</span></span></div><p>The other big global wire. Strong on world events, business and markets.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://news.sky.com" target="_blank" rel="noopener">Sky News</a><span class="tags"><span class="tag t-centre">CENTRE</span><span class="tag t-free">FREE</span></span></div><p>Ofcom-regulated broadcaster, so held to impartiality rules like the BBC.</p></li>
+    </ul>
+  </div>
+
+  <div class="group">
+    <h3>Then compare: the same story, different angles</h3>
+    <p class="why">Read one from each side on the same topic. If they agree on the facts and only argue about what to do, the facts are probably solid.</p>
+    <ul class="sources">
+      <li class="src"><div class="src-top"><a class="name" href="https://www.theguardian.com/uk" target="_blank" rel="noopener">The Guardian</a><span class="tags"><span class="tag t-left">LEANS LEFT</span><span class="tag t-free">FREE</span></span></div><p>Serious journalism with a centre-left view. No paywall, asks for donations.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://www.independent.co.uk" target="_blank" rel="noopener">The Independent</a><span class="tags"><span class="tag t-left">LEANS LEFT</span><span class="tag t-free">FREE</span></span></div><p>Liberal-leaning, broad coverage, mostly free to read.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://capx.co" target="_blank" rel="noopener">CapX</a><span class="tags"><span class="tag t-right">LEANS RIGHT</span><span class="tag t-free">FREE</span></span></div><p>Free-market, centre-right commentary from the Centre for Policy Studies. Thoughtful rather than shouty.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://www.spectator.co.uk" target="_blank" rel="noopener">The Spectator</a><span class="tags"><span class="tag t-right">LEANS RIGHT</span><span class="tag t-limit">SOME FREE</span></span></div><p>Long-running conservative weekly. A few articles free each month after a free sign-up.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://unherd.com" target="_blank" rel="noopener">UnHerd</a><span class="tags"><span class="tag t-mixed">MIXED</span><span class="tag t-limit">SOME FREE</span></span></div><p>Deliberately contrarian essays from left and right. Good for questioning the consensus.</p></li>
+    </ul>
+  </div>
+
+  <div class="group">
+    <h3>Tools that put sides next to each other</h3>
+    <p class="why">These do the comparing for you, which makes it a habit rather than a chore.</p>
+    <ul class="sources">
+      <li class="src"><div class="src-top"><a class="name" href="https://ground.news" target="_blank" rel="noopener">Ground News</a><span class="tags"><span class="tag t-mixed">ALL SIDES</span><span class="tag t-free">FREE TIER</span></span></div><p>Groups every outlet covering a story and shows how left, centre and right reported it. Has a phone app.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://www.allsides.com" target="_blank" rel="noopener">AllSides</a><span class="tags"><span class="tag t-mixed">ALL SIDES</span><span class="tag t-free">FREE</span></span></div><p>Puts a left, centre and right headline on the same story side by side. US-focused but very clear.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://www.readtangle.com" target="_blank" rel="noopener">Tangle</a><span class="tags"><span class="tag t-mixed">ALL SIDES</span><span class="tag t-free">FREE TIER</span></span></div><p>Daily newsletter: one big story, what the left says, what the right says, then the writer's own view clearly labelled.</p></li>
+      <li class="src"><div class="src-top"><a class="name" href="https://therestispolitics.com" target="_blank" rel="noopener">The Rest Is Politics</a><span class="tags"><span class="tag t-mixed">LEFT + RIGHT</span><span class="tag t-free">FREE</span></span></div><p>Podcast with a former Labour adviser and a former Conservative minister disagreeing politely. Find it in any podcast app.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="part" id="check">
+  <div class="part-head">
+    <span class="eyebrow">Part 1, continued</span>
+    <h2>Checking a claim</h2>
+    <p>When something online sounds alarming, look it up here before believing or sharing it.</p>
+  </div>
+  <ul class="sources">
+    <li class="src"><div class="src-top"><a class="name" href="https://fullfact.org" target="_blank" rel="noopener">Full Fact</a><span class="tags"><span class="tag t-centre">INDEPENDENT</span><span class="tag t-free">FREE</span></span></div><p>The UK's independent fact-checking charity. Searchable by topic.</p></li>
+    <li class="src"><div class="src-top"><a class="name" href="https://www.bbc.co.uk/news/bbcverify" target="_blank" rel="noopener">BBC Verify</a><span class="tags"><span class="tag t-centre">CENTRE</span><span class="tag t-free">FREE</span></span></div><p>Checks viral videos, images and claims, and shows how they did it.</p></li>
+    <li class="src"><div class="src-top"><a class="name" href="https://www.bbc.co.uk/programmes/b006qshd" target="_blank" rel="noopener">More or Less</a><span class="tags"><span class="tag t-centre">CENTRE</span><span class="tag t-free">FREE</span></span></div><p>Radio 4 programme that takes the numbers in the news apart. 25 minutes, genuinely fun.</p></li>
+    <li class="src"><div class="src-top"><a class="name" href="https://theconversation.com/uk" target="_blank" rel="noopener">The Conversation</a><span class="tags"><span class="tag t-centre">ACADEMICS</span><span class="tag t-free">FREE</span></span></div><p>Articles written by university researchers about their own field, edited for normal readers.</p></li>
+  </ul>
+</section>
+
+<section class="part" id="money">
+  <div class="part-head">
+    <span class="eyebrow">Part 1, continued</span>
+    <h2>Money and the world, without the hype</h2>
+    <p>The antidote to "this coin will 100x" videos and "crash is coming" threads: slow, evidence-based sources measured in years, not hours.</p>
+  </div>
+  <ul class="sources">
+    <li class="src"><div class="src-top"><a class="name" href="https://monevator.com" target="_blank" rel="noopener">Monevator</a><span class="tags"><span class="tag t-centre">EVIDENCE-BASED</span><span class="tag t-free">FREE</span></span></div><p>Long-running UK investing blog. Patient, low-cost, long-term thinking. Start with their "beginner" guides.</p></li>
+    <li class="src"><div class="src-top"><a class="name" href="https://www.bankofengland.co.uk/explainers" target="_blank" rel="noopener">Bank of England explainers</a><span class="tags"><span class="tag t-centre">OFFICIAL</span><span class="tag t-free">FREE</span></span></div><p>Plain-English answers on inflation, interest rates and why prices move.</p></li>
+    <li class="src"><div class="src-top"><a class="name" href="https://ifs.org.uk" target="_blank" rel="noopener">Institute for Fiscal Studies</a><span class="tags"><span class="tag t-centre">NON-PARTISAN</span><span class="tag t-free">FREE</span></span></div><p>Respected by every party. Tells you what a budget or policy actually means for people.</p></li>
+    <li class="src"><div class="src-top"><a class="name" href="https://www.bbc.co.uk/news/business" target="_blank" rel="noopener">BBC Business</a><span class="tags"><span class="tag t-centre">CENTRE</span><span class="tag t-free">FREE</span></span></div><p>Calm daily market and economy news, explained for non-specialists.</p></li>
+    <li class="src"><div class="src-top"><a class="name" href="https://ourworldindata.org" target="_blank" rel="noopener">Our World in Data</a><span class="tags"><span class="tag t-centre">DATA</span><span class="tag t-free">FREE</span></span></div><p>Long-run charts on health, poverty, energy and more. Many things that feel like they're getting worse are getting better over decades.</p></li>
+    <li class="src"><div class="src-top"><a class="name" href="https://www.gapminder.org/tools/" target="_blank" rel="noopener">Gapminder</a><span class="tags"><span class="tag t-centre">DATA</span><span class="tag t-free">FREE</span></span></div><p>From the late Hans Rosling, author of <em>Factfulness</em>. Animated charts and quizzes on how the world really is.</p></li>
+  </ul>
+
+  <div class="tip">
+    <h3>Five questions before believing a scary money post</h3>
+    <ul>
+      <li>Who made this, and do they earn money if I panic or buy?</li>
+      <li>Does a straight news source (BBC, AP, Reuters) report the same thing?</li>
+      <li>What does the chart look like over 1 year, or 5, rather than this week?</li>
+      <li>Is it a fact, a forecast, or an opinion? Forecasts are usually wrong.</li>
+      <li>What would I actually do differently if it's true? Often the answer is nothing.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ PART 2: CHARTS ============ -->
+<section class="part" id="charts">
+  <div class="part-head">
+    <span class="eyebrow">Part 2</span>
+    <h2>Live charts</h2>
+    <p>Each indicator is shown at 3 months and 1 year. A drop that looks like a cliff on the left often looks like a wobble on the right. Prices are live or slightly delayed, from TradingView. Click "Full chart" to zoom out to 5 years or more.</p>
+  </div>
+  <div class="controls" role="group" aria-label="Time range">
+    <button type="button" id="r-both" data-range="both" aria-pressed="true">3 months + 1 year</button>
+    <button type="button" id="r-3m" data-range="3m" aria-pressed="false">3 months only</button>
+    <button type="button" id="r-12m" data-range="12m" aria-pressed="false">1 year only</button>
+  </div>
+  <div id="chart-root"></div>
+
+  <div class="tip">
+    <h3>Reading these without worrying</h3>
+    <ul>
+      <li>Shares and crypto move every day. A 1–2% day is normal for indices; 5–10% is a normal day for crypto.</li>
+      <li>The VIX is the "fear gauge". Around 12–20 is calm; above 30 means markets are nervous. It always comes back down eventually.</li>
+      <li>Over the long run, broad indices like the S&amp;P 500 and FTSE have risen despite wars, crashes and pandemics. Short-term charts hide that.</li>
+      <li>This page is for understanding, not for trading. None of it is advice to buy or sell anything.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <p>Charts are free embeds from TradingView and need an internet connection. Lean labels are rough guides drawn from common media-bias ratings; outlets change, so read critically.</p>
+  <p>Paywall notes ("free", "free sign-up", "some free") were correct when this page was made and can change.</p>
+</footer>
+</div>
+
+<script>
+(function () {
+  var GROUPS = [
+    { title: "Stock market indices", why: "A basket of the biggest companies in each market. The best single sign of how investors feel.", items: [
+      { name: "S&P 500 (US)", sym: "FOREXCOM:SPXUSD", note: "500 largest US companies. The world's main benchmark." },
+      { name: "FTSE 100 (UK)", sym: "FOREXCOM:UKXGBP", note: "100 largest companies on the London Stock Exchange." },
+      { name: "Nasdaq 100 (US tech)", sym: "FOREXCOM:NSXUSD", note: "Tech-heavy. Swings more than the S&P 500." },
+      { name: "DAX (Germany)", sym: "INDEX:DEU40", note: "40 largest German companies. A read on Europe." },
+      { name: "Nikkei 225 (Japan)", sym: "INDEX:NKY", note: "Japan's main index. A read on Asia." }
+    ]},
+    { title: "Fear and interest rates", why: "Two gauges that explain most of the big moves in everything else.", items: [
+      { name: "VIX, the fear gauge", sym: "CAPITALCOM:VIX", note: "Expected US market volatility. Spikes in scares, then falls back." },
+      { name: "US 10-year bond yield", sym: "FRED:DGS10", note: "The interest rate the US government pays to borrow for 10 years. Updates daily, a day behind." },
+    ]},
+    { title: "Currencies", why: "Exchange rates. Moves of a few percent over months are normal.", items: [
+      { name: "US dollar vs Japanese yen", sym: "FX:USDJPY", note: "Watched closely as a sign of global risk appetite. Sharp yen moves often come before wider market wobbles." },
+      { name: "Pound vs US dollar", sym: "FX:GBPUSD", note: "How many dollars one pound buys." },
+      { name: "Pound vs euro", sym: "SAXO:GBPEUR", note: "How many euros one pound buys. Handy for holidays." },
+      { name: "US dollar index", sym: "CAPITALCOM:DXY", note: "The dollar against a basket of major currencies." }
+    ]},
+    { title: "Commodities", why: "Raw materials. Oil feeds into petrol and inflation; gold is where people hide in a scare.", items: [
+      { name: "Gold", sym: "TVC:GOLD", note: "US dollars per ounce. Tends to rise when people are worried." },
+      { name: "Brent crude oil", sym: "TVC:UKOIL", note: "The global oil benchmark, in dollars per barrel." }
+    ]},
+    { title: "Crypto", why: "Very volatile by nature. Compare the 3-month and 1-year shapes to see how much of the noise washes out.", items: [
+      { name: "Bitcoin", sym: "BITSTAMP:BTCUSD", note: "The largest cryptocurrency, in US dollars." },
+      { name: "Ethereum", sym: "BITSTAMP:ETHUSD", note: "The second largest, in US dollars." },
+      { name: "XRP", sym: "BITSTAMP:XRPUSD", note: "Ripple's coin, built for payments between banks. In US dollars." },
+      { name: "Solana", sym: "COINBASE:SOLUSD", note: "A smaller, even more volatile coin, for comparison." }
+    ]}
+  ];
+
+  var dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var theme = dark ? "dark" : "light";
+  var root = document.getElementById("chart-root");
+  var slots = [];
+
+  GROUPS.forEach(function (g) {
+    var sec = document.createElement("div");
+    sec.className = "chart-group";
+    sec.innerHTML = "<h3></h3><p class='why'></p>";
+    sec.querySelector("h3").textContent = g.title;
+    sec.querySelector(".why").textContent = g.why;
+    g.items.forEach(function (it) {
+      var card = document.createElement("article");
+      card.className = "indicator";
+      var head = document.createElement("div");
+      head.className = "ind-head";
+      var h = document.createElement("h3"); h.textContent = it.name;
+      var link = document.createElement("a");
+      link.href = "https://www.tradingview.com/chart/?symbol=" + encodeURIComponent(it.sym);
+      link.target = "_blank"; link.rel = "noopener"; link.textContent = "Full chart ↗";
+      var p = document.createElement("p"); p.textContent = it.note;
+      head.appendChild(h); head.appendChild(link); head.appendChild(p);
+      var pair = document.createElement("div");
+      pair.className = "pair";
+      [["3M", "3 months", "w-3m"], ["12M", "1 year", "w-12m"]].forEach(function (r) {
+        var box = document.createElement("div");
+        box.className = "wbox " + r[2];
+        var lab = document.createElement("span"); lab.className = "wlabel"; lab.textContent = r[1];
+        var slot = document.createElement("div"); slot.className = "wslot"; slot.textContent = "Loading chart…";
+        slot.dataset.sym = it.sym; slot.dataset.range = r[0];
+        box.appendChild(lab); box.appendChild(slot);
+        pair.appendChild(box);
+        slots.push(slot);
+      });
+      card.appendChild(head); card.appendChild(pair);
+      sec.appendChild(card);
+    });
+    root.appendChild(sec);
+  });
+
+  function load(slot) {
+    if (slot.dataset.loaded) return;
+    slot.dataset.loaded = "1";
+    slot.textContent = "";
+    var c = document.createElement("div"); c.className = "tradingview-widget-container";
+    var w = document.createElement("div"); w.className = "tradingview-widget-container__widget";
+    c.appendChild(w);
+    var s = document.createElement("script");
+    s.type = "text/javascript"; s.async = true;
+    s.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+    s.innerHTML = JSON.stringify({
+      symbol: slot.dataset.sym, width: "100%", height: "100%", locale: "en",
+      dateRange: slot.dataset.range, colorTheme: theme, isTransparent: true,
+      autosize: true, largeChartUrl: "", chartOnly: false, noTimeScale: false
+    });
+    c.appendChild(s);
+    slot.appendChild(c);
+  }
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting && e.target.offsetParent !== null) { load(e.target); io.unobserve(e.target); }
+      });
+    }, { rootMargin: "400px 0px" });
+    slots.forEach(function (s) { io.observe(s); });
+  } else {
+    slots.forEach(load);
+  }
+
+  var buttons = document.querySelectorAll(".controls button");
+  function setRange(r) {
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.range === r)); });
+    document.querySelectorAll(".pair").forEach(function (p) {
+      p.classList.toggle("only-3m", r === "3m");
+      p.classList.toggle("only-12m", r === "12m");
+    });
+    try { localStorage.setItem("longview-range", r); } catch (e) {}
+  }
+  buttons.forEach(function (b) { b.addEventListener("click", function () { setRange(b.dataset.range); }); });
+  try { var saved = localStorage.getItem("longview-range"); if (saved) setRange(saved); } catch (e) {}
+})();
+</script>
+</body>
+</html>

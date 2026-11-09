@@ -353,8 +353,9 @@ html { scroll-behavior: smooth; }
     slot.appendChild(c);
   }
 
+  var io = null;
   if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function (entries) {
+    io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting && e.target.offsetParent !== null) { load(e.target); io.unobserve(e.target); }
       });
@@ -372,6 +373,7 @@ html { scroll-behavior: smooth; }
       p.classList.toggle("only-12m", r === "12m");
       p.classList.toggle("only-60m", r === "60m");
     });
+    if (io) slots.forEach(function (s) { if (!s.dataset.loaded) { io.unobserve(s); io.observe(s); } });
     try { localStorage.setItem("longview-range", r); } catch (e) {}
   }
   buttons.forEach(function (b) { b.addEventListener("click", function () { setRange(b.dataset.range); }); });

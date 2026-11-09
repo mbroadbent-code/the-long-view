@@ -110,8 +110,10 @@ section.part { padding-top: 48px; display: grid; gap: 20px; }
 .ind-head p { color: var(--muted); font-size: 0.9rem; max-width: 70ch; }
 .ind-head a { font: 0.78rem/1 var(--mono); white-space: nowrap; }
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.pair.only-3m .w-12m, .pair.only-12m .w-3m { display: none; }
-.pair.only-3m, .pair.only-12m { grid-template-columns: 1fr; }
+.pair .w-60m { display: none; }
+.pair.only-3m .w-12m, .pair.only-12m .w-3m, .pair.only-60m .w-3m, .pair.only-60m .w-12m { display: none; }
+.pair.only-60m .w-60m { display: grid; }
+.pair.only-3m, .pair.only-12m, .pair.only-60m { grid-template-columns: 1fr; }
 .wbox { min-width: 0; display: grid; gap: 4px; }
 .wlabel { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .wslot { height: 200px; border-radius: 6px; background: var(--bg); overflow: hidden; display: grid; place-items: center; color: var(--muted); font-size: 0.85rem; }
@@ -233,12 +235,13 @@ html { scroll-behavior: smooth; }
   <div class="part-head">
     <span class="eyebrow">Part 2</span>
     <h2>Live charts</h2>
-    <p>Each indicator is shown at 3 months and 1 year. A drop that looks like a cliff on the left often looks like a wobble on the right. Prices are live or slightly delayed, from TradingView. Click "Full chart" to zoom out to 5 years or more.</p>
+    <p>Each indicator is shown at 3 months and 1 year. A drop that looks like a cliff on the left often looks like a wobble on the right. Press "5 years" to zoom right out. Prices are live or slightly delayed, from TradingView.</p>
   </div>
   <div class="controls" role="group" aria-label="Time range">
     <button type="button" id="r-both" data-range="both" aria-pressed="true">3 months + 1 year</button>
     <button type="button" id="r-3m" data-range="3m" aria-pressed="false">3 months only</button>
     <button type="button" id="r-12m" data-range="12m" aria-pressed="false">1 year only</button>
+    <button type="button" id="r-60m" data-range="60m" aria-pressed="false">5 years</button>
   </div>
   <div id="chart-root"></div>
 
@@ -315,7 +318,7 @@ html { scroll-behavior: smooth; }
       head.appendChild(h); head.appendChild(link); head.appendChild(p);
       var pair = document.createElement("div");
       pair.className = "pair";
-      [["3M", "3 months", "w-3m"], ["12M", "1 year", "w-12m"]].forEach(function (r) {
+      [["3M", "3 months", "w-3m"], ["12M", "1 year", "w-12m"], ["60M", "5 years", "w-60m"]].forEach(function (r) {
         var box = document.createElement("div");
         box.className = "wbox " + r[2];
         var lab = document.createElement("span"); lab.className = "wlabel"; lab.textContent = r[1];
@@ -367,6 +370,7 @@ html { scroll-behavior: smooth; }
     document.querySelectorAll(".pair").forEach(function (p) {
       p.classList.toggle("only-3m", r === "3m");
       p.classList.toggle("only-12m", r === "12m");
+      p.classList.toggle("only-60m", r === "60m");
     });
     try { localStorage.setItem("longview-range", r); } catch (e) {}
   }
